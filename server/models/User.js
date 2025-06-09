@@ -17,12 +17,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-     accountType: {
-      type: String,
-      enum: ["Admin", "Customer"],
-
-    },
-
     password: {
       type: String,
       required: true,
