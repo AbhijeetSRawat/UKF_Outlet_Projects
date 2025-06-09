@@ -28,7 +28,14 @@ const userSchema = new mongoose.Schema(
     mobileNumber :{
       type:String,
       required:true,
-    }
+    },
+    items:[
+      {
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"item"
+      }
+  ]
+
   }    
 )
 
