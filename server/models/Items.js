@@ -29,11 +29,26 @@ const itemSchema = new mongoose.Schema(
          type: String,
     },
     
-     category: {
-            type: mongoose.Schema.Types.ObjectId,
-            // required: true,
-            ref: "Category",
-        },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        // required: true,
+        ref: "Category",
+    },
+    
+    seller:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"user"
+    },
+
+    customer:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"user"
+    }],
+
+    quantity:{
+        type:Number
+    }
+    }
 )
 
 module.exports = mongoose.model("item", itemSchema)
