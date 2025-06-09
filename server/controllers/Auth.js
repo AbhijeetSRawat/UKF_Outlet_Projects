@@ -6,10 +6,10 @@ const jwt = require("jsonwebtoken");
 exports.signUp = async(req,res)=>{
     try{
         //desturcture values from the body
-        const {name,email,password,mobileNumber} = req.body;
+        const {name,email,password,mobileNo} = req.body;
 
         //check whether something is missing or not
-        if(!name || !email || !password || !mobileNumber){
+        if(!name || !email || !password || !mobileNo){
             return res.status(400).json({
                 success:false,
                 message:"All fields are necessary",
@@ -40,7 +40,7 @@ exports.signUp = async(req,res)=>{
             name,
             email,
             password : hashedPassword,
-            mobileNumber,
+            mobileNumber:mobileNo,
         })
 
         console.log(user);

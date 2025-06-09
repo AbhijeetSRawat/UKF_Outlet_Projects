@@ -41,12 +41,17 @@
 
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import axios from "axios";
+import { useNavigate } from 'react-router';
+
 
 export default function Login() {
     const [showSignUp, setShowSignUp] = useState(true);
     const [signupData, setSignupData] = useState({ name: '', email: '', password: '', mobileNo: '' });
     const [loginData, setLoginData] = useState({ email: '', password: '' });
     const [message, setMessage] = useState('');
+
+    const navigate = useNavigate();
 
     const handleSignupChange = (e) => {
         setSignupData({ ...signupData, [e.target.name]: e.target.value });
@@ -56,26 +61,75 @@ export default function Login() {
         setLoginData({ ...loginData, [e.target.name]: e.target.value });
     };
 
+
+
     // Dummy handlers for UI only
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
-        setMessage('Signup feature is disabled.');
-        Swal.fire({
-            icon: 'info',
-            title: 'Signup Disabled',
-            text: 'Backend integration has been removed.'
-        });
+        console.log(signupData)
+        // setMessage('Signup feature is disabled.');
+        // Swal.fire({
+        //     icon: 'info',
+        //     title: 'Signup Disabled',
+        //     text: 'Backend integration has been removed.'
+        // });
+
+        try {
+            const response = await axios.post("http://localhost:4000/api/v1/signup",signupData);
+
+            Swal.fire({
+             icon: 'success',
+             title: 'Sign up Successfull',
+             text: 'Now Login to UKF Outlets.'
+             });
+
+            navigate("/");
+            console.log("Signup successful:", response.data);
+        } catch (error) {
+
+            Swal.fire({
+             icon: 'error',
+             title: 'Sign up Failed',
+             text: 'Error while SignUp.'
+             });
+
+            console.error("Signup error:", error.response.data);
+        }
     };
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        setMessage('Login feature is disabled.');
-        Swal.fire({
-            icon: 'info',
-            title: 'Login Disabled',
-            text: 'Backend integration has been removed.'
-        });
+        // setMessage('Login feature is disabled.');
+        // Swal.fire({
+        //     icon: 'info',
+        //     title: 'Login Disabled',
+        //     text: 'Backend integration has been removed.'
+        // });
+
+         try {
+            const response = await axios.post("http://localhost:4000/api/v1/login",loginData);
+            navigate("/");
+            
+            Swal.fire({
+             icon: 'success',
+             title: 'Login Successfull',
+             text: 'Welcome to UKF Outlets.'
+             });
+
+            console.log("Login successful:", response.data);
+        } catch (error) {
+
+            Swal.fire({
+             icon: 'error',
+             title: 'Log In Failed',
+             text: 'Error while LogIn.'
+             });
+
+            console.error("Login error:", error.response.data);
+        }
     };
+
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-black">
