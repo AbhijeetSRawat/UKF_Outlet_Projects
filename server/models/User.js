@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+     accountType: {
+      type: String,
+      enum: ["Admin", "Customer"],
+      required: true,
+    },
 
     password: {
       type: String,
@@ -34,7 +39,10 @@ const userSchema = new mongoose.Schema(
       type:mongoose.Schema.Types.ObjectId,
       ref:"item"
       }
-  ]
+  ],
+  image: {
+      type: String,
+    },
 
   }    
 )

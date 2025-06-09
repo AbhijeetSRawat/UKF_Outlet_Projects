@@ -16,8 +16,24 @@ const itemSchema = new mongoose.Schema(
         required:true,
     },
     
+    itemDescription: { type: String },
 
-    }    
+    ratingAndReviews: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "RatingAndReview",
+        },
+    ],
+
+    thumbnail: {
+         type: String,
+    },
+    
+     category: {
+            type: mongoose.Schema.Types.ObjectId,
+            // required: true,
+            ref: "Category",
+        },
 )
 
 module.exports = mongoose.model("item", itemSchema)
