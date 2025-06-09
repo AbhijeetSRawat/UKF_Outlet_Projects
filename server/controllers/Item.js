@@ -152,3 +152,49 @@ exports.showAllItems = async (req,res)=>{
         })
     }
 }
+
+exports.deleteItem = async (req,res)=>{
+    try{
+        const {itemId,categoryId} = req.body;
+
+        const userId = req.user.id;
+
+        await categoryId.findByIdAndUpdate(
+                                        {_id : itemId},
+                                        {$pull:{
+                                            items:itemId
+                                        }}
+                                        )
+        
+        await userId.findByIdAndUpdate(
+                                        {_id : itemId},
+                                        {$pull:{
+                                            items:itemId
+                                        }}
+                                        )
+
+        const Items = Item.findByIdAndDelete({_id : itemId})
+
+         if (!Items) {
+            return res.status(404).json({
+                success: false, 
+                message: "item not found for deletion" 
+            })
+        }
+        
+      return res.json({
+      success: true,
+      message: "Item deleted successfully",
+  
+    })
+
+    }
+    catch(error){
+        console.log("error occured while deleting the item");
+        res.status(500).json({
+            success:false,
+            message:"error occured while deleting the item",
+            error:error
+        })
+    }
+}
