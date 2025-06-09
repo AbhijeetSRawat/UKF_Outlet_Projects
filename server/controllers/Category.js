@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const Category = require("../models/Category")
 
 exports.createCategory = async (req,res)=>{
@@ -58,5 +59,41 @@ exports.showAllCategories = async (req,res)=>{
             success:false,
             message:"Categories can't be fetched"
         })  
+    }
+}
+
+exports.getCategoryDetails = async (req,res) => {
+    try{
+        const {categoryId} = req.body;
+
+        const categoryDetails = await Category.find({_id : categoryId}).populate(
+                                                                            {
+                                                                                path : "items",
+                                                                                populate : {
+                                                                                    path:"ratingAndReview"
+                                                                                }
+                                                                            }
+                                                                        )
+                                                                        .exec();
+
+        if(!categoryDetails){
+            return res.status(400).json({
+                success:false,
+                message:`could not get category details of the category ${categoryId}` 
+            })
+        }
+
+        return res.staus (200).json({
+            success:true,
+            message:"Category details fetched successfully",
+            data:categoryDetails,
+        })
+    }
+    catch(error){
+        res.status(500).json({
+            success:false,
+            message:"error while fetching category details",
+            error:error
+        })
     }
 }

@@ -93,7 +93,7 @@ exports.getItemDetails = async (req,res)=>{
 
         const itemDetails = await Item.find({_id : itemId}).populate("seller")
                                                             .populate("category")
-                                                            .populate("ratingAndReviews")
+                                                            .populate("ratingAndReview")
                                                             .populate("customer")
                                                             .exec();
 

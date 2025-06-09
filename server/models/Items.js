@@ -18,7 +18,7 @@ const itemSchema = new mongoose.Schema(
     
     itemDescription: { type: String },
 
-    ratingAndReviews: [
+    ratingAndReview: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "RatingAndReview",
