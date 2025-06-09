@@ -20,6 +20,8 @@ import Login from './components/Login'
 import LoginSuccessfully from './components/LoginSuccessfully'
 import Detailspage from './components/Detailspage'
 import Videopage from './pages/Videopage'
+import AddData from './components/AddData'
+import Checkoutpage from './components/Checkoutpage'
 
 export default function App() {
   const router = createBrowserRouter([
@@ -41,11 +43,14 @@ export default function App() {
         { path: "/ethnicwear", element: <Ethnicwear /> },
         { path: "/partywear", element: <Partywear /> },
         { path: '/addtocart', element: <AddToCart /> },
+        { path: '/adddata', element: <AddData /> },
+        { path: '/checkoutpage', element: <Checkoutpage /> },
         { path: '/whishlist', element: <Whishlist /> },
         { path: '/login', element: <Login /> },
         { path: '/loginsuccessfully', element: <LoginSuccessfully /> },
         { path: '/detailspage', element: <Detailspage /> },
         { path: '/videopage', element: <Videopage /> }
+        
       ]
     }
   ])

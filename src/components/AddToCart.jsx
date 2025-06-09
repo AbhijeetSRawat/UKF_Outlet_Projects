@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TiDeleteOutline } from 'react-icons/ti';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddToCart({ setOpen3 }) {
     const [open, setOpen] = useState(1);
@@ -8,6 +9,7 @@ export default function AddToCart({ setOpen3 }) {
     const [active, setActive] = useState(false)
     const [active1, setActive1] = useState(false)
     const [active2, setActive2] = useState(false)
+    const navigate = useNavigate();
     const desc = () => {
         if (open > 1) {
             setOpen(open - 1)
@@ -78,7 +80,10 @@ export default function AddToCart({ setOpen3 }) {
 
             <div className="mt-12 text-center">
                 <h2 className="text-2xl font-bold mb-2">Total: ₹ {(open + open1 + open2)*1296}</h2>
-                <button className="px-8 py-3 bg-[#ecba49] text-black text-lg font-bold rounded hover:bg-yellow-400 transition-all">
+                <button
+                    className="px-8 py-3 bg-[#ecba49] text-black text-lg font-bold rounded hover:bg-yellow-400 transition-all"
+                    onClick={() => navigate('/Checkoutpage')}
+                >
                     Proceed to Checkout
                 </button>
             </div>
