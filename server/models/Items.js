@@ -47,6 +47,25 @@ const itemSchema = new mongoose.Schema(
 
     quantity:{
         type:Number
+    },
+    brand:{
+        type:String
+    },
+    discount:{
+        type:Number
+    },
+    color:{
+        type:String,
+    },
+    gender:{
+        type:String,
+         enum: ["Men", "Women"]
+    },
+    productType:{
+        type:String
+    },
+    fabric:{
+        type:String
     }
     }
 )

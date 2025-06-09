@@ -7,11 +7,11 @@ const {uploadImageToCloudinary} = require("../utils/imageUploader")
 
 exports.createItem = async (req,res) => {
     try{
-        const {name,description,price,category,quantity} = req.body;
+        const {name,description,price,category,quantity,brand,discount,color,gender,productType,fabric} = req.body;
 
         const thumbnail = req.files.thumbnailImage;
 
-        if(!name || !description || !price || !category || !quantity || !thumbnail){
+        if(!name || !description || !price || !category || !quantity || !thumbnail || !brand || !discount || !color || !gender || !productType || !fabric){
             return res.status(400).json({
                 success:false,
                 message:"Give all details while creating an item"
@@ -47,7 +47,13 @@ exports.createItem = async (req,res) => {
             category:categoryDetails._id,
             quantity,
             thumbnail : thumbnailImage,
-            seller : sellerDetails._id
+            seller : sellerDetails._id,
+            brand,
+            discount,
+            color,
+            gender,
+            productType,
+            fabric
         });
 
         await User.findByIdAndUpdate(
