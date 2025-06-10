@@ -15,10 +15,10 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
 exports.signUp = async(req,res)=>{
     try{
         //desturcture values from the body
-        const {name,email,password,mobileNo} = req.body;
+        const {name,email,password,mobileNo,otp} = req.body;
 
         //check whether something is missing or not
-        if(!name || !email || !password || !mobileNo){
+        if(!name || !email || !password || !mobileNo || !otp){
             return res.status(400).json({
                 success:false,
                 message:"All fields are necessary",
@@ -27,17 +27,17 @@ exports.signUp = async(req,res)=>{
 
         //check whether the user already existed
 
-        const existingUser = await User.findOne({email});
+        const existingUser = await User.findOne({mobileNumber : mobileNo});
 
         if(existingUser){
             return res.status(409).json({
                 success:false,
-                message:"User already existed with this email",
+                message:"User already existed with this ph no.",
             })
         }
 
         //check the otp
-
+        
         //hash the password
 
         //save the data into user model
@@ -101,7 +101,7 @@ exports.sendOtp = async (req, res) => {
     } catch (error) {
         console.error("Twilio Error:", error);
         res.status(500).json({ message: "Failed to send OTP. Try again later." });
-    }
+    }
 };
 
 exports.logIn = async (req, res) => {
@@ -126,7 +126,7 @@ exports.logIn = async (req, res) => {
             return res.status(200).json({ message: "Admin login successful.", token, role: "admin" });
         }
 
-        const user = await User.findOne({ mobile });
+        const user = await User.findOne({ mobileNumber : mobile });
         if (!user) return res.status(400).json({ message: "User not found." });
 
         const isMatch = await bcrypt.compare(password, user.password);

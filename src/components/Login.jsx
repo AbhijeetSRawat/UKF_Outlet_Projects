@@ -48,8 +48,8 @@ import { useNavigate } from 'react-router';
 
 export default function Login() {
     const [showSignUp, setShowSignUp] = useState(true);
-    const [signupData, setSignupData] = useState({ name: '', email: '', password: '', mobileNo: '' });
-    const [loginData, setLoginData] = useState({ email: '', password: '' });
+    const [signupData, setSignupData] = useState({ name: '', email: '', password: '', mobileNo: '' , otp : ''});
+    const [loginData, setLoginData] = useState({ mobile : '', password: '' });
     const [message, setMessage] = useState('');
 
     const navigate = useNavigate();
@@ -109,6 +109,7 @@ export default function Login() {
 
          try {
             const response = await axios.post("http://localhost:4000/api/v1/login",loginData);
+            console.log(loginData);
             navigate("/");
             
             Swal.fire({
@@ -130,7 +131,27 @@ export default function Login() {
         }
     };
 
+    const handleOTP = async (mobileNo)=>{
+        try{
+             const response = await axios.post("http://localhost:4000/api/v1/sendotp",mobileNo);
+             console.log(response);
 
+             Swal.success({
+             icon: 'success',
+             title: 'OTP sent successfully',
+             text: 'Check otp on your mobile'
+             });
+        }
+        catch(error){
+            console.log(error);
+            Swal.error({
+             icon: 'failure',
+             title: 'Otp did not send',
+             text: 'Otp sent to your mobile.'
+             });
+
+        }
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-black">
@@ -158,18 +179,31 @@ export default function Login() {
                                 <label className="block mb-1 text-[#ecba49]">Name</label>
                                 <input type="text" name="name" value={signupData.name} onChange={handleSignupChange} placeholder="Enter your name" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
                             </div>
-                            <div>
-                                <label className="block mb-1 text-[#ecba49]">Email</label>
-                                <input type="email" name="email" value={signupData.email} onChange={handleSignupChange} placeholder="Enter your email" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
-                            </div>
-                            <div>
-                                <label className="block mb-1 text-[#ecba49]">Password</label>
-                                <input type="password" name="password" value={signupData.password} onChange={handleSignupChange} placeholder="Enter your password" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
-                            </div>
+
                             <div>
                                 <label className="block mb-1 text-[#ecba49]">Mobile Number</label>
                                 <input type="tel" name="mobileNo" value={signupData.mobileNo} onChange={handleSignupChange} placeholder="Enter your mobile number" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
                             </div>
+
+                            <button onClick={()=>handleOTP(signupData.mobileNo)} className="w-full mt-4 cursor-pointer bg-[#ecba49] text-black font-semibold py-2 px-4 rounded hover:bg-yellow-400 transition">
+                                Send Otp
+                            </button>
+
+                            <div>
+                                <label className="block mb-1 text-[#ecba49]">OTP</label>
+                                <input type="otp" name="otp" value={signupData.otp} onChange={handleSignupChange} placeholder="Enter the otp" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
+                            </div>
+
+                            <div>
+                                <label className="block mb-1 text-[#ecba49]">Password</label>
+                                <input type="password" name="password" value={signupData.password} onChange={handleSignupChange} placeholder="Enter your password" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
+                            </div>
+                            
+                            <div>
+                                <label className="block mb-1 text-[#ecba49]">Email</label>
+                                <input type="email" name="email" value={signupData.email} onChange={handleSignupChange} placeholder="Enter your email" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
+                            </div>
+
                             <button type="submit" className="w-full mt-4 cursor-pointer bg-[#ecba49] text-black font-semibold py-2 px-4 rounded hover:bg-yellow-400 transition">
                                 Sign Up
                             </button>
@@ -180,8 +214,8 @@ export default function Login() {
                         <h2 className="text-3xl font-bold mb-6 text-[#ecba49] text-center">Login</h2>
                         <form className="space-y-4" onSubmit={handleLogin}>
                             <div>
-                                <label className="block mb-1 text-[#ecba49]">Email</label>
-                                <input type="email" name="email" value={loginData.email} onChange={handleLoginChange} placeholder="Enter your email" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
+                                <label className="block mb-1 text-[#ecba49]">Mobile No.</label>
+                                <input type="mobile" name="mobile" value={loginData.mobile} onChange={handleLoginChange} placeholder="Enter your mobile" className="w-full p-2 rounded bg-gray-800 text-white border border-[#ecba49] placeholder-gray-400" required />
                             </div>
                             <div>
                                 <label className="block mb-1 text-[#ecba49]">Password</label>
