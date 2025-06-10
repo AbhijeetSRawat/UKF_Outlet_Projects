@@ -1,7 +1,16 @@
+/* eslint-disable no-undef */
 const { FaJarWheat } = require("react-icons/fa6");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
+require("dotenv").config();
+
+const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_MOBILE = "8107142344";
+const ADMIN_PASSWORD = "123";
+const twilio = require("twilio");
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 exports.signUp = async(req,res)=>{
     try{
@@ -60,60 +69,82 @@ exports.signUp = async(req,res)=>{
     }
 }
 
-exports.logIn = async(req,res)=>{
-    try{
 
-        //destructure from body
-        const {email,password} = req.body;
 
-        //check all the values are present or not
-        if(!email || !password){
-            return res.status(400).json({
-                success:false,
-                message:"All fields are mandatory!"
-            })
+exports.sendOtp = async (req, res) => {
+    try {
+        const { mobile } = req.body;
+        if (!mobile) return res.status(400).json({ message: "Mobile number is required." });
+
+        const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+        const formattedMobile = mobile.startsWith("+") ? mobile : `+91${mobile}`;
+        const otp = generateOTP();
+        const otpExpiresAt = new Date(Date.now() + 5 * 60000);
+
+        let user = await UserLogin.findOne({ mobile });
+        if (user) {
+            user.otp = otp;
+            user.otpExpiresAt = otpExpiresAt;
+        } else {
+            user = new UserLogin({ name: "Unknown", mobile, password: "defaultpassword", otp, otpExpiresAt });
         }
-        
-        //check whether the user exists or not
-        const user = await User.findOne({email});
+        await user.save();
 
-        if(!user){
-            return res.status(404).json({
-                success:false,
-                message:"User is not registered, Please Sign In"
-            })
-        }
+        await client.messages.create({
+            body: `Your OTP is: ${otp}`,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to: formattedMobile
+        });
 
-        //compare the credentials and token accordingly
-        if(await bcrypt.compare(password,user.password)){
-            const payload = {
-                email:user.email,
-                id:user._id,
+        res.status(200).json({ message: "OTP sent successfully." });
+    } catch (error) {
+        console.error("Twilio Error:", error);
+        res.status(500).json({ message: "Failed to send OTP. Try again later." });
+    }
+};
+
+exports.logIn = async (req, res) => {
+    try {
+        const { mobile, password } = req.body;
+
+        if (mobile === ADMIN_MOBILE) {
+            if (password !== ADMIN_PASSWORD) {
+                return res.status(401).json({ message: "Invalid admin credentials." });
             }
-
-            const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"});
-            
-            user.token = token;
-            user.password = undefined;
-
-            res.status(200).json({
-                success:true,
-                message:"User has successfully login",
-                user
-            })
-        }
-        else{
-            return res.status(401).json({
-                success:false,
-                message:"Incorrect Password",
-            })
+            let admin = await User.findOne({ mobile: ADMIN_MOBILE });
+            if (!admin) {
+                admin = new User({
+                    name: "Admin",
+                    mobile: ADMIN_MOBILE,
+                    password: await bcrypt.hash(ADMIN_PASSWORD, 10),
+                    role: "admin"
+                });
+                await admin.save();
+            }
+            const token = jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: "7d" });
+            return res.status(200).json({ message: "Admin login successful.", token, role: "admin" });
         }
 
+        const user = await User.findOne({ mobile });
+        if (!user) return res.status(400).json({ message: "User not found." });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentials." });
+
+        const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+
+        res.status(200).json({ message: "Login successful.", token, role: user.role });
+    } catch (error) {
+        res.status(500).json({ message: error.message});
     }
-    catch(error){
-        return res.status(500).json({
-            success:false,
-            message:"Internal server error while LogIn"
-        })
+}
+
+exports.logout = async (req, res) => {
+    try {
+        // Token frontend se remove karwana hoga
+        res.status(200).json({ message: "Logout successful." });
+    } catch (error) {
+        res.status(500).json({ message: "Logout failed.", error: error.message });
     }
 }
